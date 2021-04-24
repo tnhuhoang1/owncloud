@@ -1,0 +1,130 @@
+<span class="addressBookName" ng-show="!ctrl.editing" title="{{ctrl.addressBook.displayName}}">{{ctrl.addressBook.displayName}}</span>
+<span ng-show="!ctrl.editing" class="utils">
+
+    <span class="action">
+        <span
+            class="addressbooklist-icon icon-share"
+            title="{{ctrl.t.shareAddressbook}}"
+            ng-click="ctrl.toggleSharesEditor(ctrl.addressBook)">
+        </span>
+    </span>
+
+
+		<span class="action">
+			<span class="icon-more"
+				href="#"
+				on-toggle-show="#more-actions-{{ $id }}"
+				title="{{ctrl.t.more}}"
+				role="button">
+		</span>
+	</span>
+</span>
+
+<div ng-show="!ctrl.editing" id="more-actions-{{ $id }}"
+	 class="app-navigation-entry-menu">
+	<ul>
+		<li>
+			<button	ng-click="ctrl.openNameEditor()">
+				<span class="icon-rename svg"></span>
+				<span>{{ctrl.t.edit}}</span>
+			</button>
+		</li>
+		<li>
+			<button	ng-click="ctrl.toggleShowUrl()">
+				<span class="icon-public svg"></span>
+				<span>{{ctrl.t.showURL}}</span>
+			</button>
+		</li>
+
+		<li>
+			<button	ng-click="ctrl.download()">
+				<span class="icon-download svg"></span>
+				<span>{{ctrl.t.download}}</span>
+			</button>
+		</li>
+
+		<li>
+			<button	ng-click="ctrl.deleteAddressBook()">
+				<span class="icon-delete svg"></span>
+				<span>{{ctrl.t.deleteAddressbook}}</span>
+			</button>
+		</li>
+	</ul>
+</div>
+
+<form ng-show="ctrl.editing" ng-submit="ctrl.saveNameEditor()">
+	<fieldset class="editfieldset">
+		<input class="app-navigation-input"
+			   ng-model="ctrl.displayName"
+			   type="text"/>
+
+		<div class="buttongroups">
+			<button class="primary icon-checkmark-white accept-button">
+			</button>
+			<button type="button" class="btn close-button icon-close"
+					ng-click="ctrl.cancelNameEditor()">
+			</button>
+		</div>
+	</fieldset>
+</form>
+
+<div class="oneline" ng-show="ctrl.showUrl">
+	<div>
+		<input id="addressBookUrl-{{index}}" class="input-with-button-on-right-side" type="url" value="{{ctrl.addressBook.url}}" readonly />
+		<input type="submit" value="" class="copy-button icon-clippy pull-right" ngclipboard title="{{ctrl.t.copyUrlTitle}}" data-clipboard-target="#addressBookUrl-{{index}}">
+	</div>
+	<button class="btn icon-close button-next-to-input"
+		ng-click="ctrl.toggleShowUrl()">
+	</button>
+</div>
+<div class="addressBookShares" ng-show="ctrl.editingShares">
+	<i ng-show="ctrl.loadingSharees" class="glyphicon glyphicon-refresh"></i>
+	<input
+		type="text"
+		class="shareeInput"
+		uib-typeahead="sharee.display for sharee in ctrl.findSharee($viewValue)"
+		typeahead-on-select="ctrl.onSelectSharee($item)"
+		typeahead-loading="ctrl.loadingSharees"
+		ng-model="ctrl.selectedSharee"
+		placeholder="{{ctrl.t.shareInputPlaceHolder}}">
+	<ul class="addressBook-share-list">
+		<li ng-repeat="userShare in ctrl.addressBook.sharedWith.users" class="addressBook-share-item">
+			<span class="shareeIdentifier">{{ userShare.displayname }}</span> -
+			<input type="checkbox" name="editable"
+				   id="checkbox_sharedWithUser_{{ctrl.addressBook.tmpId}}_{{$id}}"
+				   ng-model="userShare.writable" value="edit"
+				   ng-change="ctrl.updateExistingUserShare(userShare.id, userShare.writable)">
+			<label for="checkbox_sharedWithUser_{{ctrl.addressBook.tmpId}}_{{$id}}"> {{ctrl.t.canEdit}}</label>
+			<span class="utils">
+				<span class="action">
+					<span href="#"
+						  id="addressBooklist-icon delete"
+						  data-id="{{ ctrl.addressBook.uri }}"
+						  title="{{ctrl.t.delete}}"
+						  class="icon-delete"
+						  ng-click="ctrl.unshareFromUser(userShare.id)">
+					</span>
+				</span>
+			</span>
+		</li>
+		<li ng-repeat="groupShare in ctrl.addressBook.sharedWith.groups" class="calendar-share-item">
+			{{ groupShare.displayname }} (group) -
+			<input type="checkbox" name="editable"
+				   id="checkbox_sharedWithGroup_{{ctrl.addressBook.tmpId}}_{{$id}}"
+				   ng-model="groupShare.writable" value="edit"
+				   ng-change="ctrl.updateExistingGroupShare(groupShare.id, groupShare.writable)">
+			<label for="checkbox_sharedWithGroup_{{ctrl.addressBook.tmpId}}_{{$id}}"> {{ctrl.t.canEdit}}</label>
+			<span class="utils hide">
+				<span class="action">
+					<span href="#"
+						  id="addressBooklist-icon delete"
+						  data-id="{{ ctrl.addressBook.uri }}"
+						  title="{{ctrl.t.delete}}"
+						  class="icon-delete"
+						  ng-click="ctrl.unshareFromGroup(groupShare.id)">
+					</span>
+				</span>
+			</span>
+		</li>
+	</ul>
+</div>
